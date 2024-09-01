@@ -1,101 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import Countdown from 'react-countdown';
-import 'tailwindcss/tailwind.css';
+import Calendar from './Calendar'
 
-const SpecialMemories = () => {
-  const [anniversaries, setAnniversaries] = useState([
-    { id: 1, title: 'Ngày gặp nhau', date: '2024-12-25' },
-    { id: 2, title: 'Ngày yêu nhau', date: '2025-01-01' },
-    { id: 3, title: 'Ngày hẹn hò đầu tiên', date: '2025-02-14' },
-  ]);
-  
-  // Sort anniversaries by date
-  anniversaries.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Find the next anniversary
-  const now = new Date();
-  const nextAnniversary = anniversaries.find(
-    (anniversary) => new Date(anniversary.date) > now
-  );
-
-  const [videoUrl, setVideoUrl] = useState('');
-  const [showAll, setShowAll] = useState(false);
-
-  const handleVideoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setVideoUrl(URL.createObjectURL(file));
-    }
-  };
-
+export default function Celebrate() {
   return (
-    <div className="container mx-auto p-8 bg-pink-50 rounded-lg shadow-lg">
-      <h1 className="text-4xl font-bold text-center mb-12 text-pink-600">Kỷ Niệm Đặc Biệt</h1>
-      
-      {/* Countdown Section */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6 text-pink-800">Kỷ Niệm Sắp Tới</h2>
-        {nextAnniversary && (
-          <div className="bg-pink-100 p-6 rounded-lg shadow-md mb-6">
-            <h3 className="text-lg font-bold text-center mb-2 text-pink-700">{nextAnniversary.title}</h3>
-            <div className="text-center text-pink-500">
-              <Countdown date={new Date(nextAnniversary.date)} />
+    <div className="flex flex-col text-[#FF69B4] h-full">
+      <main className="flex-1 px-6 py-8">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Kỉ niệm sắp tới</h2>
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <Calendar />
             </div>
           </div>
-        )}
-        
-        <button 
-          onClick={() => setShowAll(!showAll)} 
-          className="bg-pink-200 text-pink-800 font-semibold py-2 px-4 rounded-full hover:bg-pink-300 transition duration-300">
-          {showAll ? 'Ẩn Các Kỷ Niệm Khác' : 'Hiển Thị Tất Cả Kỷ Niệm'}
-        </button>
-
-        {showAll && (
-          <div className="mt-6">
-            <h2 className="text-2xl font-semibold mb-6 text-pink-800">Tất Cả Kỷ Niệm</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {anniversaries.map((anniversary) => (
-                <div key={anniversary.id} className="bg-pink-100 p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-bold text-center mb-2 text-pink-700">{anniversary.title}</h3>
-                  <div className="text-center text-pink-500">
-                    <Countdown date={new Date(anniversary.date)} />
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Thông báo</h2>
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-[#FF69B4] w-8 h-8 flex items-center justify-center text-white">
+                    <CalendarIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Anniversary in 2 days</p>
+                    <p className="text-sm text-[#FF69B4]">Đừng quên lên kế hoạch gì đó đặc biệt nhé!</p>
                   </div>
                 </div>
-              ))}
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-[#FF69B4] w-8 h-8 flex items-center justify-center text-white">
+                    <GiftIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Birthday in 1 week</p>
+                    <p className="text-sm text-[#FF69B4]">Đã đến lúc bắt đầu nghĩ về một món quà!</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-      </div>
-
-      {/* Video Section */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-6 text-pink-800">Tạo Video Kỷ Niệm</h2>
-        <div className="mb-6">
-          <input 
-            type="file"
-            accept="video/*"
-            onChange={handleVideoUpload}
-            className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-pink-100 file:text-pink-600
-            hover:file:bg-pink-200
-          " />
-        </div>
-        {videoUrl && (
-          <div className="relative pb-9/16 h-0 overflow-hidden max-w-full w-full mb-6 rounded-lg shadow-lg">
-            <video src={videoUrl} controls className="absolute top-0 left-0 w-full h-full rounded-lg"></video>
-          </div>
-        )}
-        <textarea
-          className="w-full p-4 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-pink-600"
-          placeholder="Thêm văn bản hoặc chú thích cho video..."
-          rows="3"
-        />
-      </div>
+        </section>
+      </main>
     </div>
-  );
-};
+  )
+}
 
-export default SpecialMemories;
+function CalendarIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+    </svg>
+  )
+}
+
+function GiftIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 8v13" />
+      <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+      <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+    </svg>
+  )
+}
+
+// function HeartIcon(props) {
+//   return (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="24"
+//       height="24"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+//     </svg>
+//   )
+// }

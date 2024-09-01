@@ -1,22 +1,22 @@
 // src/components/TimeCapsule.js
 
-import React, { useState } from 'react';
-import GiftBox from './GiftBox';
+import { useState } from 'react'
+import GiftBox from './GiftBox'
 
 const TimeCapsule = () => {
-  const [name, setName] = useState('');
-  const [date, setDate] = useState('');
-  const [content, setContent] = useState('');
-  const [capsules, setCapsules] = useState([]);
+  const [name, setName] = useState('')
+  const [date, setDate] = useState('')
+  const [content, setContent] = useState('')
+  const [capsules, setCapsules] = useState([])
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const newCapsule = { name, date, content };
-    setCapsules([...capsules, newCapsule]);
-    setName('');
-    setDate('');
-    setContent('');
-  };
+    e.preventDefault()
+    const newCapsule = { name, date, content }
+    setCapsules([...capsules, newCapsule])
+    setName('')
+    setDate('')
+    setContent('')
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -85,7 +85,7 @@ const TimeCapsule = () => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TimeCapsule;
+export default TimeCapsule

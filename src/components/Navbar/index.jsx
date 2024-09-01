@@ -1,6 +1,43 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuthContext } from '../../context/authContext'
+import { FaBell } from 'react-icons/fa'
+import { BiSolidMessageRounded } from 'react-icons/bi'
+import DropdownAvatar from './Dropdown/DropdownAvatar'
+import DropdownMessage from './Dropdown/DropdownMessage'
+import DropdownNotification from './Dropdown/DropdownNoti'
+import ModalLetter from './ModalLetter'
 
 function index() {
+  const { authUser, setAuthUser } = useAuthContext()
+  const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useState(false)
+  const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false)
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false)
+
+  const messageDropdownRef = useRef(null)
+  const notificationDropdownRef = useRef(null)
+  const avatarDropdownRef = useRef(null)
+
+  const handleClickOutside = (event) => {
+    if (messageDropdownRef.current && !messageDropdownRef.current.contains(event.target)) {
+      setIsMessageDropdownOpen(false)
+    }
+    if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target)) {
+      setIsNotificationDropdownOpen(false)
+    }
+    if (avatarDropdownRef.current && !avatarDropdownRef.current.contains(event.target)) {
+      setIsAvatarDropdownOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
     <div className="flex justify-between bg-pink-600 text-white">
       <div className="navbar-start text-white">
@@ -51,26 +88,54 @@ function index() {
         </ul>
       </div>
 
-      <div className="w-10 mx-10 dropdown dropdown-end justify-end">
-        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-          <div className="w-10 rounded-full">
-            <img
-              alt="avatar"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <div className="w-36 flex items-center mx-10 dropdown dropdown-end justify-end">
+        <div className="w-36 flex items-center mx-10 dropdown dropdown-end justify-end">
+          <div ref={messageDropdownRef} className='relative'>
+            <div
+              className='cursor-pointer rounded-full bg-pink-500 hover:bg-pink-400 w-8 h-8 flex items-center justify-center'
+              onClick={() => {
+                setIsMessageDropdownOpen(!isMessageDropdownOpen)
+                setIsAvatarDropdownOpen(false)
+                setIsNotificationDropdownOpen(false)
+              }}
+            >
+              <BiSolidMessageRounded/>
+            </div>
+            {isMessageDropdownOpen && (<DropdownMessage />)}
+          </div>
+
+          <div ref={notificationDropdownRef} className='relative'>
+            <div
+              className='cursor-pointer rounded-full bg-pink-500 hover:bg-pink-400 w-8 h-8 flex items-center justify-center mx-3'
+              onClick={() => {
+                setIsMessageDropdownOpen(false)
+                setIsAvatarDropdownOpen(false)
+                setIsNotificationDropdownOpen(!isNotificationDropdownOpen)
+              }}
+            >
+              <FaBell/>
+            </div>
+            {isNotificationDropdownOpen && (<DropdownNotification />)}
+          </div>
+
+          <div ref={avatarDropdownRef} className='relative'>
+            <div
+              className="btn btn-ghost btn-circle avatar"
+              onClick={() => {
+                setIsMessageDropdownOpen(false)
+                setIsAvatarDropdownOpen(!isAvatarDropdownOpen)
+                setIsNotificationDropdownOpen(false)
+              }}
+            >
+              <div className="w-10 rounded-full">
+                <img alt="avatar" src={authUser?.avatar} />
+              </div>
+            </div>
+            {isAvatarDropdownOpen && (<DropdownAvatar setAuthUser={setAuthUser} />)}
           </div>
         </div>
-        <ul
-          tabIndex={0}
-          className="menu menu-sm dropdown-content bg-pink-400 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-          <li className="text-white">
-            <a className="justify-between">
-              Profile
-            </a>
-          </li>
-          <li className="text-white"><a>Settings</a></li>
-          <li className="text-white"><Link to='/login'>Logout</Link></li>
-        </ul>
       </div>
+      <ModalLetter />
     </div>
   )
 }

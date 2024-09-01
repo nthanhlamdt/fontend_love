@@ -1,22 +1,22 @@
 // src/components/GiftSender.js
 
-import React, { useState } from 'react';
+import { useState } from 'react'
 
 const GiftSender = () => {
-  const [recipient, setRecipient] = useState('');
-  const [gift, setGift] = useState('');
-  const [message, setMessage] = useState('');
-  const [gifts, setGifts] = useState([]);
+  const [recipient, setRecipient] = useState('')
+  const [gift, setGift] = useState('')
+  const [message, setMessage] = useState('')
+  const [gifts, setGifts] = useState([])
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const newGift = { recipient, gift, message };
-    setGifts([...gifts, newGift]);
-    setRecipient('');
-    setGift('');
-    setMessage('');
-    alert('Quà tặng đã được gửi!');
-  };
+    e.preventDefault()
+    const newGift = { recipient, gift, message }
+    setGifts([...gifts, newGift])
+    setRecipient('')
+    setGift('')
+    setMessage('')
+    alert('Quà tặng đã được gửi!')
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -87,7 +87,7 @@ const GiftSender = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default GiftSender;
+export default GiftSender
