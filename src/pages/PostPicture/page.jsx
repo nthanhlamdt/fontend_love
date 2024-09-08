@@ -1,177 +1,100 @@
-import { useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { formatDistanceToNow } from 'date-fns';
-import { useSwipeable } from 'react-swipeable';
+import { Camera } from 'lucide-react';
 
-export default function Component() {
-  const webcamRef = useRef(null);
-  const [photo, setPhoto] = useState(null);
-  const [caption, setCaption] = useState('');
-  const [viewIndex, setViewIndex] = useState(0);
-  const photos = [
-    {
-      src: 'https://example.com/photo1.jpg',
-      caption: 'Our first date',
-      uploaderName: 'John Doe',
-      uploadTime: '2024-08-10T12:34:56Z',
-    },
-    {
-      src: 'https://example.com/photo2.jpg',
-      caption: 'Anniversary trip',
-      uploaderName: 'Jane Smith',
-      uploadTime: '2024-07-25T08:22:30Z',
-    },
-    {
-      src: 'https://example.com/photo3.jpg',
-      caption: 'Proposal moment',
-      uploaderName: 'Emily Davis',
-      uploadTime: '2024-06-15T14:18:45Z',
-    },
-    {
-      src: 'https://example.com/photo4.jpg',
-      caption: 'Wedding day',
-      uploaderName: 'Michael Johnson',
-      uploadTime: '2024-05-02T16:45:30Z',
-    },
-  ];
+const initialImages = [
+  { id: 1, url: '/placeholder.svg?height=600&width=400', user: 'Alice', timestamp: new Date().toISOString() },
+  { id: 2, url: '/placeholder.svg?height=600&width=400', user: 'Bob', timestamp: new Date().toISOString() },
+  { id: 3, url: '/placeholder.svg?height=600&width=400', user: 'Charlie', timestamp: new Date().toISOString() },
+];
 
-  const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setPhoto(imageSrc);
-  };
+export default function InstantCameraSharingApp() {
+  const [images, setImages] = useState(initialImages);
+  const [stream, setStream] = useState(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
-  const handleSwipe = (direction) => {
-    if (direction === 'Left') {
-      setViewIndex((prevIndex) => (prevIndex + 1) % photos.length);
-    } else if (direction === 'Right') {
-      setViewIndex((prevIndex) => (prevIndex - 1 + photos.length) % photos.length);
+  useEffect(() => {
+    startCamera();
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (error) {
+      console.error('Không thể truy cập camera:', error);
     }
   };
 
-  const swipeHandlers = useSwipeable({
-    onSwiped: (e) => handleSwipe(e.dir),
-  });
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      const video = videoRef.current;
+
+      canvasRef.current.width = video.videoWidth;
+      canvasRef.current.height = video.videoHeight;
+
+      context.drawImage(video, 0, 0, canvasRef.current.width, canvasRef.current.height);
+
+      const imageUrl = canvasRef.current.toDataURL('image/jpeg');
+
+      setImages(prevImages => [
+        ...prevImages,
+        {
+          id: prevImages.length + 1,
+          url: imageUrl,
+          user: 'Me',
+          timestamp: new Date().toISOString()
+        }
+      ]);
+    }
+  };
+
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user"
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="flex-grow">
-        <div className="bg-card shadow-lg rounded-lg p-8 max-w-4xl mx-auto mt-8 mb-16">
-          <h1 className="text-3xl font-bold mb-4 text-center text-card-foreground">
-            Couples Gallery
-          </h1>
-
-          {/* WebCam */}
-          {!photo ? (
-            <div className="flex flex-col items-center mb-6">
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                width="400"
-                height="300"
-                className="rounded-lg mb-4"
-              />
-              <button
-                className="bg-pink-500 text-white rounded-lg py-2 px-4 hover:bg-pink-600"
-                onClick={capture}
-              >
-                <CameraIcon className="h-5 w-5 inline-block mr-2" />
-                Take Photo
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center mb-6">
-              <img
-                src={photo}
-                alt="Couple's Photo"
-                width="400"
-                height="300"
-                className="rounded-lg mb-4"
-                style={{ aspectRatio: '4/3', objectFit: 'cover' }}
-              />
-              <textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Add caption..."
-                className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
-              />
-              <div className="flex gap-2">
-                <button
-                  className="bg-green-500 text-white rounded-lg py-2 px-4 hover:bg-green-600 mb-4"
-                  onClick={() => {
-                    // Handle share functionality
-                    alert('Photo shared with caption: ' + caption);
-                  }}
-                >
-                  Share
-                </button>
-                <button
-                  className="bg-blue-500 text-white rounded-lg py-2 px-4 hover:bg-blue-600"
-                  onClick={() => setPhoto(null)}
-                >
-                  Retake
-                </button>
+    <div className="container mx-auto bg-gray-100 h-full flex flex-col items-center justify-center">
+      <div className="space-y-4 overflow-y-auto flex flex-col items-center">
+        <Webcam
+          audio={false}
+          height={720}
+          ref={videoRef}
+          screenshotFormat="image/jpeg"
+          width={1280}
+          videoConstraints={videoConstraints}
+        />
+        <button onClick={captureImage} className="bg-pink-500 text-white px-4 py-2 rounded-lg flex items-center">
+          <Camera className="mr-2 h-5 w-5" /> Chụp Ảnh
+        </button>
+        <canvas ref={canvasRef} style={{ display: 'none' }} width="640" height="480" />
+        {images.map(image => (
+          <div key={image.id} className="bg-white p-4 rounded-lg shadow-md border border-pink-200 max-w-2/3">
+            <img src={image.url} alt={`Uploaded by ${image.user}`} className="w-full object-cover rounded-lg mb-4 cursor-pointer" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-pink-300 rounded-full flex items-center justify-center text-white font-bold">
+                  {image.user[0]}
+                </div>
+                <span className="font-semibold text-pink-500">{image.user}</span>
               </div>
+              <time className="text-sm text-gray-500">{new Date(image.timestamp).toLocaleString()}</time>
             </div>
-          )}
-
-          {/* Swipeable PhotoCard */}
-          {photos.length > 0 && (
-            <div
-              className="flex flex-col items-center mb-6"
-              {...swipeHandlers}
-            >
-              <PhotoCard 
-                src={photos[viewIndex].src} 
-                alt="Couple's Photo" 
-                caption={photos[viewIndex].caption} 
-                uploaderName={photos[viewIndex].uploaderName} 
-                uploadTime={photos[viewIndex].uploadTime} 
-              />
-            </div>
-          )}
-        </div>
-      </div>
-      <footer className="bg-footer p-4 text-center">
-        {/* Footer content */}
-      </footer>
-    </div>
-  );
-}
-
-function PhotoCard({ src, alt, caption, uploaderName, uploadTime }) {
-  return (
-    <div className="flex flex-col items-center bg-white rounded-lg shadow-md overflow-hidden">
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-48 object-cover"
-      />
-      <div className="p-4">
-        <p className="text-lg font-semibold text-gray-800 mb-2">{caption}</p>
-        <div className="text-sm text-gray-600 mb-1">Uploaded by: {uploaderName}</div>
-        <div className="text-xs text-gray-500">{formatDistanceToNow(new Date(uploadTime), { addSuffix: true })}</div>
+          </div>
+        ))}
       </div>
     </div>
-  );
-}
-
-function CameraIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-      <circle cx="12" cy="13" r="3" />
-    </svg>
   );
 }

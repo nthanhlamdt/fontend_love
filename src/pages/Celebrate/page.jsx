@@ -1,18 +1,20 @@
 import Calendar from './Calendar'
+import ModalCreateCelebrate from './Calendar/ListDayCalendar/ModalCreateCelebrate'
 
 export default function Celebrate() {
   return (
-    <div className="flex flex-col text-[#FF69B4] h-full">
+    <div className="text-[#FF69B4] h-full container m-auto">
+      <ModalCreateCelebrate />
       <main className="flex-1 px-6 py-8">
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section>
           <div>
-            <h2 className="text-2xl font-bold mb-4">Kỉ niệm sắp tới</h2>
-            <div className="bg-white rounded-lg shadow-md p-4">
+            <h2 className="text-2xl font-bold mb-4">Lịch kỉ niệm</h2>
+            <div>
               <Calendar />
             </div>
           </div>
           <div>
-            <h2 className="text-2xl font-bold mb-4">Thông báo</h2>
+            <h2 className="text-2xl font-bold mb-4 mt-4">Kỉ Niệm Sắp Tới</h2>
             <div className="bg-white rounded-lg shadow-md p-4">
               <div className="space-y-4">
                 <div className="flex items-start gap-4">

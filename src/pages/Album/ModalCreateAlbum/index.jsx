@@ -57,7 +57,7 @@ function ModalCreateAlbum({ albums, setAlbums }) {
 
         <button
           onClick={handleAddAlbum}
-          className="bg-pink-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-pink-600 w-full"
+          className="bg-pink-500 text-white font-semibold my-3 py-2 px-4 rounded-full hover:bg-pink-600 w-full"
         >
           Tạo Album
         </button>

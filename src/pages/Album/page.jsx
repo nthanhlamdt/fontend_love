@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import 'tailwindcss/tailwind.css'
 import CardAlbum from './CardAlbum'
-import { GrAdd } from 'react-icons/gr'
-import ModalCreateAlbum from './ModalCreateAlbum'
 
-const initialAlbums = [
+import ModalCreateAlbum from './ModalCreateAlbum'
+import ModalImageAlbum from './ModalImageAlbum'
+import HeaderAlbum from './HeaderAlbum'
+
+const dataAlbums = [
   {
     id: 1,
     title: 'Chuyến Đi Đà Nẵng',
@@ -30,52 +32,9 @@ const initialAlbums = [
 ]
 
 const MemoryAlbum = () => {
-  const [albums, setAlbums] = useState(initialAlbums)
-  const [newPhoto, setNewPhoto] = useState({ url: '', caption: '' })
-  const [photoFile, setPhotoFile] = useState(null)
+  const [albums, setAlbums] = useState(dataAlbums)
+
   const [selectedAlbum, setSelectedAlbum] = useState(null)
-
-  const handleCloseModal = () => {
-    setSelectedAlbum(null)
-  }
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setPhotoFile(url)
-      setNewPhoto({ ...newPhoto, url })
-    }
-  }
-
-  const handleAddPhoto = () => {
-    if (newPhoto.url && newPhoto.caption) {
-      const updatedAlbum = {
-        ...selectedAlbum,
-        photos: [...selectedAlbum.photos, { ...newPhoto, id: selectedAlbum.photos.length + 1 }]
-      }
-      setAlbums(albums.map(album => (album.id === selectedAlbum.id ? updatedAlbum : album)))
-      setSelectedAlbum(updatedAlbum)
-      setNewPhoto({ url: '', caption: '' })
-      setPhotoFile(null)
-    }
-  }
-
-  const handleEditCaption = (photoId, newCaption) => {
-    const updatedPhotos = selectedAlbum.photos.map(photo =>
-      photo.id === photoId ? { ...photo, caption: newCaption } : photo
-    )
-    const updatedAlbum = { ...selectedAlbum, photos: updatedPhotos }
-    setAlbums(albums.map(album => (album.id === selectedAlbum.id ? updatedAlbum : album)))
-    setSelectedAlbum(updatedAlbum)
-  }
-
-  const handleDeletePhoto = (photoId) => {
-    const updatedPhotos = selectedAlbum.photos.filter(photo => photo.id !== photoId)
-    const updatedAlbum = { ...selectedAlbum, photos: updatedPhotos }
-    setAlbums(albums.map(album => (album.id === selectedAlbum.id ? updatedAlbum : album)))
-    setSelectedAlbum(updatedAlbum)
-  }
 
   const handleDeleteAlbum = (albumId) => {
     const updatedAlbums = albums.filter(album => album.id !== albumId)
@@ -84,17 +43,9 @@ const MemoryAlbum = () => {
   }
 
   return (
-    <div className='mx-auto p-8 rounded-lg'>
-      <div className='mt-3 flex justify-between items-center'>
-        <h1 className='text-pink-500 font-bold text-xl mb-5'>Danh sách Album ảnh</h1>
-        <button
-          className="flex items-center px-3 py-2 rounded-full bg-pink-500 hover:bg-pink-400 text-white"
-          onClick={() => document.getElementById('modal_create_album').showModal()}
-        >
-          <GrAdd className='pr-1 text-2xl font-bold'/>
-          Tạo Album
-        </button>
-      </div>
+    <div className='mx-auto p-8 rounded-lg container'>
+      <HeaderAlbum />
+
       {/* Danh Sách Album Ảnh */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8'>
         {albums.map(album => (
@@ -109,67 +60,12 @@ const MemoryAlbum = () => {
 
       {/* Modal Hiển Thị Các Ảnh Trong Album */}
       {selectedAlbum && (
-        <div className='fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50'>
-          <div className='bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto'>
-            <h2 className='text-3xl font-semibold mb-4 text-pink-800'>Album: {selectedAlbum.title}</h2>
-            <button
-              onClick={handleCloseModal}
-              className='bg-pink-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-pink-600 mb-4'
-            >
-              Đóng
-            </button>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4'>
-              {selectedAlbum.photos.map(photo => (
-                <div key={photo.id} className='bg-pink-100 p-4 rounded-lg shadow-md relative overflow-hidden'>
-                  <img src={photo.url} alt={photo.caption} className='w-full h-48 object-cover rounded-t-lg'/>
-                  <input
-                    type='text'
-                    value={photo.caption}
-                    onChange={(e) => handleEditCaption(photo.id, e.target.value)}
-                    className='bottom-0 w-full p-2 bg-pink-200 border-t border-pink-300 rounded-b-lg outline-none'
-                    placeholder='Chỉnh sửa mô tả'
-                  />
-                  <button
-                    onClick={() => handleDeletePhoto(photo.id)}
-                    className='absolute top-2 right-2 bg-red-500 text-white font-semibold py-1 px-2 rounded-full hover:bg-red-600'
-                  >
-                    Xóa
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className='bg-pink-100 p-6 rounded-lg shadow-lg border border-pink-300'>
-              <h3 className='text-xl font-semibold mb-4 text-pink-800'>Thêm Ảnh Mới</h3>
-              <label htmlFor='photo-upload' className='mb-5 inline-block bg-pink-500 text-white font-semibold py-2 px-4 rounded-full cursor-pointer hover:bg-pink-600 transition duration-300'>
-                Chọn Ảnh
-                <input
-                  type='file'
-                  id='photo-upload'
-                  accept='image/*'
-                  onChange={handleFileUpload}
-                  className='hidden'
-                />
-              </label>
-              {photoFile && (
-                <div className='mb-4'>
-                  <img src={photoFile} alt='Preview' className='w-48 h-48 object-cover object-center rounded-lg'/>
-                </div>
-              )}
-              <textarea
-                placeholder='Mô tả ảnh'
-                value={newPhoto.caption}
-                onChange={(e) => setNewPhoto({ ...newPhoto, caption: e.target.value })}
-                className='w-full p-2 mb-4 border border-pink-300 rounded outline-none'
-              />
-              <button
-                onClick={handleAddPhoto}
-                className='bg-pink-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-pink-600'
-              >
-                Thêm Ảnh Vào Album
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalImageAlbum
+          selectedAlbum={selectedAlbum}
+          setSelectedAlbum={setSelectedAlbum}
+          albums={albums}
+          setAlbums={setAlbums}
+        />
       )}
 
       {/* Thêm Album Mới */}

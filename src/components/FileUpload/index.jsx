@@ -1,4 +1,4 @@
-import { BiImageAdd } from "react-icons/bi";
+import { BiImageAdd } from 'react-icons/bi'
 
 function ImageUploader({ images, setImages }) {
   const handleImageUpload = (e) => {
@@ -29,7 +29,7 @@ function ImageUploader({ images, setImages }) {
             <img
               src={image}
               alt={`Upload Preview ${index + 1}`}
-              className="w-full h-full object-cover rounded-lg shadow-lg"
+              className="w-20 h-20 object-cover rounded-lg shadow-lg"
             />
           </div>
         ))}

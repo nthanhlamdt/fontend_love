@@ -1,31 +1,41 @@
-function Leaderboard() {
+function Leaderboard({ scores }) {
+
+
   return (
-    <div className="card bg-pink-100 shadow-lg rounded-lg overflow-auto h-72">
-      <h2 className="text-2xl font-semibold text-white bg-pink-500 p-4">
-        Bảng xếp hạng
-      </h2>
-      <div className="p-3">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-pink-200 text-pink-800">
-              <th className="py-3 px-4 text-left">Hạng</th>
-              <th className="py-3 px-4 text-left">Họ Tên</th>
-              <th className="py-3 px-4 text-right">Điểm</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-pink-200 hover:bg-pink-50 transition-colors duration-200">
-              <td className="py-3 px-4">1</td>
-              <td className="py-3 px-4">Ngô Thành Lâm</td>
-              <td className="py-3 px-4 text-right text-pink-800">1,500</td>
-            </tr>
-            <tr className="border-b border-pink-200 hover:bg-pink-50 transition-colors duration-200">
-              <td className="py-3 px-4">2</td>
-              <td className="py-3 px-4">Võ Thị Na Vi</td>
-              <td className="py-3 px-4 text-right text-pink-800">1,200</td>
-            </tr>
-          </tbody>
-        </table>
+    <div className='bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden'>
+      <div className='bg-pink-500 text-white p-4'>
+        <h2 className='flex items-center text-2xl font-semibold'>
+          <span className='mr-2' aria-hidden='true'>🏆</span>
+          Bảng Xếp Hạng
+        </h2>
+      </div>
+      <div className='p-6'>
+        <div className='space-y-6'>
+          <div>
+            <div className='flex justify-between mb-2 font-semibold text-pink-700'>
+              <span>Người chơi 1</span>
+              <span>{scores.player1} điểm</span>
+            </div>
+            <div className='h-3 bg-pink-200 rounded-full'>
+              <div
+                className='h-full bg-pink-500 rounded-full'
+                style={{ width: `${scores.player1}%` }}
+              ></div>
+            </div>
+          </div>
+          <div>
+            <div className='flex justify-between mb-2 font-semibold text-pink-700'>
+              <span>Người chơi 2</span>
+              <span>{scores.player2} điểm</span>
+            </div>
+            <div className='h-3 bg-pink-200 rounded-full'>
+              <div
+                className='h-full bg-pink-500 rounded-full'
+                style={{ width: `${scores.player2}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

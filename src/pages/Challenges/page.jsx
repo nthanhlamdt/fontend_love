@@ -3,21 +3,81 @@ import CoupleChallenge from './CoupleChallenge'
 import IndividualChallenges from './IndividualChallenges'
 import Leaderboard from './Leaderboard'
 
+import { useState } from 'react'
+
 export default function Challenges() {
+  const [scores, setScores] = useState({
+    player1: 75,
+    player2: 80
+  })
+
+  const [sharedChallenge, setSharedChallenge] = useState({
+    title: 'Đi xem phim cùng nhau',
+    completed: false,
+    evidence: null
+  })
+
+  const [dailyChallenge, setDailyChallenge] = useState({
+    title: 'Nói Anh/Em yêu em/anh 5 lần',
+    completed: false,
+    evidence: null
+  })
+
+  const [history, setHistory] = useState([
+    { title: 'Nấu bữa tối cùng nhau', date: '2023-06-01', type: 'shared' },
+    { title: 'Gửi tin nhắn yêu thương', date: '2023-06-02', type: 'daily' },
+    { title: 'Đi dạo trong công viên', date: '2023-06-03', type: 'shared' },
+    { title: 'Đi dạo trong công viên', date: '2023-06-03', type: 'shared' }
+  ])
+
+  
+  const handleChallengeComplete = (challengeType) => {
+    if (challengeType === 'shared' && sharedChallenge.evidence) {
+      setSharedChallenge(prev => ({ ...prev, completed: true }))
+      setHistory(prev => [{
+        title: sharedChallenge.title,
+        date: new Date().toISOString().split('T')[0],
+        type: 'shared'
+      }, ...prev])
+      // Cập nhật điểm số ở đây
+    } else if (challengeType === 'daily' && dailyChallenge.evidence) {
+      setDailyChallenge(prev => ({ ...prev, completed: true }))
+      setHistory(prev => [{
+        title: dailyChallenge.title,
+        date: new Date().toISOString().split('T')[0],
+        type: 'daily'
+      }, ...prev])
+      // Cập nhật điểm số ở đây
+    } else {
+      alert('Vui lòng upload bằng chứng trước khi hoàn thành thử thách!')
+    }
+  }
+  
+
+  
+
   return (
-    <div className="flex flex-col min-h-screen bg-pink-50">
-      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="flex-1 space-y-8">
-            <CoupleChallenge />
-            <IndividualChallenges />
-          </div>
-          <div className="flex-1 space-y-8">
-            <Leaderboard />
-            <CompletedChallenges />
-          </div>
+    <div className='container m-auto'>
+      <div>
+        <h1 className='text-4xl font-bold text-center mb-12 text-pink-600 animate-pulse'>
+          ❤️ Thử Thách Tình Yêu ❤️
+        </h1>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+          <Leaderboard scores={scores}/>
+
+          <CoupleChallenge
+            setDailyChallenge={setDailyChallenge}
+            setSharedChallenge={setSharedChallenge}
+            sharedChallenge= {sharedChallenge}
+            handleChallengeComplete= {handleChallengeComplete}
+          />
+
+          <IndividualChallenges setDailyChallenge={setDailyChallenge}/>
+
+          <CompletedChallenges />
         </div>
-      </main>
+      </div>
     </div>
   )
 }
